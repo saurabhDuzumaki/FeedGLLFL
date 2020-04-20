@@ -17,10 +17,12 @@ const FeedScreen = ({navigation}) => {
 
   React.useEffect(() => {
     const unsubscribe = navigation.addListener('focus', async () => {
-      setIsLoaded(false);
+      // setIsLoaded(false);
       let allFeeds = await AsyncStorage.getItem(ALL_POSTS);
-      originalPosts = JSON.parse(allFeeds).reverse();
-      allFeeds ? setFeeds(originalPosts) : [];
+      if (allFeeds && allFeeds.length > 0) {
+        originalPosts = JSON.parse(allFeeds).reverse();
+        allFeeds ? setFeeds(originalPosts) : [];
+      }
       // console.log(allFeeds);
       setIsLoaded(true);
     });
@@ -32,8 +34,7 @@ const FeedScreen = ({navigation}) => {
     setSearchQuery(text);
     if (text.trim().length > 0) {
       let filteredPosts = originalPosts.filter(item => {
-        console.log(item);
-
+        // console.log(item);
         if (
           item.text &&
           item.text.toUpperCase().includes(text.trim().toUpperCase())

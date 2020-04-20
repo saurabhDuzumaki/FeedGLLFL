@@ -6,8 +6,6 @@ import AsyncStorage from '@react-native-community/async-storage';
 import Video from 'react-native-video';
 import moment from 'moment';
 
-const ALL_POSTS = 'ALL_POSTS';
-
 const AddPostScreen = ({navigation}) => {
   const [text, setText] = React.useState('');
   const [selectedFile, setSelectedFile] = React.useState(null);
@@ -51,20 +49,20 @@ const AddPostScreen = ({navigation}) => {
       };
       //   console.log(currentPost);
 
-      try {
-        let allPosts = await AsyncStorage.getItem(ALL_POSTS);
-        if (!allPosts) {
-          allPosts = [];
-          allPosts.push(currentPost);
-        } else {
-          allPosts = JSON.parse(allPosts);
-          allPosts.push(currentPost);
-        }
-        await AsyncStorage.setItem(ALL_POSTS, JSON.stringify(allPosts));
-        navigation.goBack();
-      } catch {
-        console.log('err');
-      }
+      // try {
+      //   let allPosts = await AsyncStorage.getItem(ALL_POSTS);
+      //   if (!allPosts) {
+      //     allPosts = [];
+      //     allPosts.push(currentPost);
+      //   } else {
+      //     allPosts = JSON.parse(allPosts);
+      //     allPosts.push(currentPost);
+      //   }
+      //   await AsyncStorage.setItem(ALL_POSTS, JSON.stringify(allPosts));
+      //   navigation.goBack();
+      // } catch {
+      //   console.log('err');
+      // }
     }
   };
 

@@ -7,15 +7,21 @@
  */
 
 import React from 'react';
+import 'react-native-gesture-handler';
 import {Provider as PaperProvider, DefaultTheme} from 'react-native-paper';
+import {StatusBar} from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
+
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import Root from './src/Navigation/HomeNavigator';
-import {StatusBar} from 'react-native';
-import AsyncStorage from '@react-native-community/async-storage';
 import SignInScreen from './src/Screens/SignInScreen';
 import SignUpScreen from './src/Screens/SignUpScreen';
 import SplashScreen from './src/Screens/SplashScreen';
+
+import {createStore, applyMiddleware} from 'redux';
+import {Provider} from 'react-redux';
+import thunk from 'redux-thunk';
 
 const Stack = createStackNavigator();
 

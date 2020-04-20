@@ -13,41 +13,40 @@ const SignUpScreen = ({navigation}) => {
 
   const validate = async () => {
     if (username.trim().length > 0 && password.trim().length > 0) {
-      let allUsers = await AsyncStorage.getItem('ALL_USERS');
-      console.log(allUsers);
-
-      if (allUsers) {
-        allUsers = JSON.parse(allUsers);
-        const user = allUsers.find(res => res.user.username === username);
-        if (user) {
-          setVisible(true);
-        } else {
-          let newUser = {
-            user: {
-              username: username,
-              password: password,
-            },
-          };
-          allUsers.push(newUser);
-          const allUser = ['ALL_USERS', JSON.stringify(allUsers)];
-          const newOne = ['user', JSON.stringify(newUser)];
-          await AsyncStorage.multiSet([allUser, newOne]);
-          signUp(newUser);
-        }
-      } else {
-        let newUser = {
-          user: {
-            username: username,
-            password: password,
-          },
-        };
-        let newList = [];
-        newList.push(newUser);
-        const allUser = ['ALL_USERS', JSON.stringify(newList)];
-        const newOne = ['user', JSON.stringify(newUser)];
-        await AsyncStorage.multiSet([allUser, newOne]);
-        signUp(newUser);
-      }
+      // let allUsers = await AsyncStorage.getItem('ALL_USERS');
+      // console.log(allUsers);
+      // if (allUsers) {
+      //   allUsers = JSON.parse(allUsers);
+      //   const user = allUsers.find(res => res.user.username === username);
+      //   if (user) {
+      //     setVisible(true);
+      //   } else {
+      //     let newUser = {
+      //       user: {
+      //         username: username,
+      //         password: password,
+      //       },
+      //     };
+      //     allUsers.push(newUser);
+      //     const allUser = ['ALL_USERS', JSON.stringify(allUsers)];
+      //     const newOne = ['user', JSON.stringify(newUser)];
+      //     await AsyncStorage.multiSet([allUser, newOne]);
+      //     signUp(newUser);
+      //   }
+      // } else {
+      //   let newUser = {
+      //     user: {
+      //       username: username,
+      //       password: password,
+      //     },
+      //   };
+      //   let newList = [];
+      //   newList.push(newUser);
+      //   const allUser = ['ALL_USERS', JSON.stringify(newList)];
+      //   const newOne = ['user', JSON.stringify(newUser)];
+      //   await AsyncStorage.multiSet([allUser, newOne]);
+      //   signUp(newUser);
+      // }
     }
   };
 
