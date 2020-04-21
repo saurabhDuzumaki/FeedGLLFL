@@ -1,6 +1,22 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import * as actionTypes from './actionTypes';
 
+export const getCurrentUser = (username, password) => ({
+  type: actionTypes.CURRENT_USER,
+  payload: {
+    username: username,
+    password: password,
+  },
+});
+
+export const getUser = () => {
+  return async dispatch => {
+    let user = await AsyncStorage.getItem('user');
+    user = JSON.parse(user);
+    dispatch(getCurrentUser(user.user.username, user.user.password));
+  };
+};
+
 export const getLogin = () => ({type: actionTypes.LOG_IN});
 
 export const getLoginSuccess = (username, password) => ({
@@ -16,6 +32,8 @@ export const getLoginFail = type => {
     },
   };
 };
+
+export const logout = () => ({type: actionTypes.LOG_OUT});
 
 export const fetchLogin = (username, password) => {
   return async dispatch => {
@@ -44,7 +62,7 @@ export const fetchLogin = (username, password) => {
   };
 };
 
-export const getSignup = () => ({type: actionTypes.SIGN_UP});
+export const getSignupNow = () => ({type: actionTypes.SIGN_UP});
 
 export const getSignupSuccess = (username, password) => ({
   type: actionTypes.SIGN_UP_SUCCESS,
@@ -56,11 +74,12 @@ export const getSignupSuccess = (username, password) => ({
 
 export const getSignupFail = () => ({type: actionTypes.SIGN_UP_FAIL});
 
-export const signupNow = (username, password) => {
+export const signup = (username, password) => {
   return async dispatch => {
+    dispatch(getSignupNow());
     try {
       let allUsers = await AsyncStorage.getItem('ALL_USERS');
-      console.log(allUsers);
+      // console.log(allUsers);
 
       if (allUsers) {
         allUsers = JSON.parse(allUsers);

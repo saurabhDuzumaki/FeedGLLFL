@@ -19,13 +19,16 @@ import SignInScreen from './src/Screens/SignInScreen';
 import SignUpScreen from './src/Screens/SignUpScreen';
 import SplashScreen from './src/Screens/SplashScreen';
 
-import {createStore, applyMiddleware} from 'redux';
+import {createStore, applyMiddleware, compose} from 'redux';
 import {Provider} from 'react-redux';
 import thunk from 'redux-thunk';
+import rootReducer from './src/Store/reducers';
 
 const Stack = createStackNavigator();
 
 export const AuthContext = React.createContext();
+
+const store = createStore(rootReducer, compose(applyMiddleware(thunk)));
 
 const App = ({navigation}) => {
   // AsyncStorage.clear();
@@ -35,27 +38,27 @@ const App = ({navigation}) => {
         case 'RESTORE':
           return {
             ...prevState,
-            user: action.user,
-            isLoading: false,
+            loggedInUser: action.user,
+            isLoadingNow: false,
           };
         case 'SIGN_IN':
           return {
             ...prevState,
             isSignout: false,
-            user: action.user,
+            loggedInUser: action.user,
           };
         case 'SIGN_OUT':
           return {
             ...prevState,
             isSignout: true,
-            user: null,
+            loggedInUser: null,
           };
       }
     },
     {
-      isLoading: true,
+      isLoadingNow: true,
       isSignout: false,
-      user: null,
+      loggedInUser: null,
     },
   );
 
@@ -64,6 +67,7 @@ const App = ({navigation}) => {
       let user;
       try {
         user = await AsyncStorage.getItem('user');
+        // console.log(JSON.parse(user));
       } catch (e) {
         console.log(e);
       }
@@ -78,10 +82,9 @@ const App = ({navigation}) => {
       signIn: async data => {
         dispatch({type: 'SIGN_IN', user: data.user});
       },
-      signOut: () => dispatch({type: 'SIGN_OUT'}),
+      logOut: () => dispatch({type: 'SIGN_OUT'}),
       signUp: async data => {
         // console.log('HERE', data);
-
         dispatch({type: 'SIGN_IN', user: data.user});
       },
     }),
@@ -89,42 +92,44 @@ const App = ({navigation}) => {
   );
 
   return (
-    <PaperProvider>
-      <AuthContext.Provider value={authContext}>
-        <NavigationContainer>
-          <StatusBar
-            barStyle="light-content"
-            backgroundColor={DefaultTheme.colors.primary}
-          />
-          {state.isLoading ? (
-            <Stack.Navigator headerMode="none">
-              <Stack.Screen name="Splash" component={SplashScreen} />
-            </Stack.Navigator>
-          ) : state.user == null ? (
-            <Stack.Navigator headerMode="none">
-              <Stack.Screen
-                name="SignIn"
-                component={SignInScreen}
-                options={{
-                  title: 'Sign in',
-                  // pop animation for logout
-                  animationTypeForReplace: state.isSignout ? 'pop' : 'push',
-                }}
-              />
-              <Stack.Screen
-                name="SignUp"
-                component={SignUpScreen}
-                options={{
-                  title: 'Sign up',
-                }}
-              />
-            </Stack.Navigator>
-          ) : (
-            <Root />
-          )}
-        </NavigationContainer>
-      </AuthContext.Provider>
-    </PaperProvider>
+    <Provider store={store}>
+      <PaperProvider>
+        <AuthContext.Provider value={authContext}>
+          <NavigationContainer>
+            <StatusBar
+              barStyle="light-content"
+              backgroundColor={DefaultTheme.colors.primary}
+            />
+            {state.isLoadingNow ? (
+              <Stack.Navigator headerMode="none">
+                <Stack.Screen name="Splash" component={SplashScreen} />
+              </Stack.Navigator>
+            ) : state.loggedInUser == null ? (
+              <Stack.Navigator headerMode="none">
+                <Stack.Screen
+                  name="SignIn"
+                  component={SignInScreen}
+                  options={{
+                    title: 'Sign in',
+                    // pop animation for logout
+                    animationTypeForReplace: state.isSignout ? 'pop' : 'push',
+                  }}
+                />
+                <Stack.Screen
+                  name="SignUp"
+                  component={SignUpScreen}
+                  options={{
+                    title: 'Sign up',
+                  }}
+                />
+              </Stack.Navigator>
+            ) : (
+              <Root />
+            )}
+          </NavigationContainer>
+        </AuthContext.Provider>
+      </PaperProvider>
+    </Provider>
   );
 };
 

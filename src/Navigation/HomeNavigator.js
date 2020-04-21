@@ -5,11 +5,13 @@ import FeedScreen from '../Screens/FeedScreen';
 import AddPostScreen from '../Screens/AddPostScreen';
 import AsyncStorage from '@react-native-community/async-storage';
 import {AuthContext} from '../../App';
+import {connect} from 'react-redux';
+import {logout} from '../Store/actions/authActions';
 
 const Stack = createStackNavigator();
 
-const Root = () => {
-  const {signOut} = React.useContext(AuthContext);
+const Root = ({logoutTop}) => {
+  const {logOut} = React.useContext(AuthContext);
   return (
     <Stack.Navigator
       headerMode="screen"
@@ -24,7 +26,8 @@ const Root = () => {
               icon="power"
               onPress={async () => {
                 await AsyncStorage.removeItem('user');
-                signOut();
+                logoutTop();
+                logOut();
               }}
             />
           </Appbar.Header>
@@ -44,4 +47,7 @@ const Root = () => {
   );
 };
 
-export default Root;
+export default connect(
+  null,
+  {logoutTop: logout},
+)(Root);

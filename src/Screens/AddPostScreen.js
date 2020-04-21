@@ -2,11 +2,12 @@ import * as React from 'react';
 import {StyleSheet, Image} from 'react-native';
 import ImagePicker from 'react-native-image-picker';
 import {TextInput, Button} from 'react-native-paper';
-import AsyncStorage from '@react-native-community/async-storage';
 import Video from 'react-native-video';
 import moment from 'moment';
+import {connect} from 'react-redux';
+import {addFeed} from '../Store/actions/feedActions';
 
-const AddPostScreen = ({navigation}) => {
+const AddPostScreen = ({navigation, currentUser, addNewFeed}) => {
   const [text, setText] = React.useState('');
   const [selectedFile, setSelectedFile] = React.useState(null);
   const [mediaType, setMediaType] = React.useState('image');
@@ -35,34 +36,16 @@ const AddPostScreen = ({navigation}) => {
   const removeMedia = () => setSelectedFile(null);
 
   const postNow = async () => {
-    let user = await AsyncStorage.getItem('user');
-    user = JSON.parse(user);
-    console.log(user);
-
     if (text.trim().length > 0 || selectedFile != null) {
       let currentPost = {
         text: text,
-        name: user.user.username,
+        name: currentUser.user.username,
         selectedFile: selectedFile,
         mediaType: selectedFile ? mediaType : null,
         time: moment.now(),
       };
-      //   console.log(currentPost);
-
-      // try {
-      //   let allPosts = await AsyncStorage.getItem(ALL_POSTS);
-      //   if (!allPosts) {
-      //     allPosts = [];
-      //     allPosts.push(currentPost);
-      //   } else {
-      //     allPosts = JSON.parse(allPosts);
-      //     allPosts.push(currentPost);
-      //   }
-      //   await AsyncStorage.setItem(ALL_POSTS, JSON.stringify(allPosts));
-      //   navigation.goBack();
-      // } catch {
-      //   console.log('err');
-      // }
+      addNewFeed(currentPost);
+      navigation.goBack();
     }
   };
 
@@ -123,4 +106,14 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AddPostScreen;
+const mapStateToProps = (state, ownProps) => ({
+  currentUser: state.auth.user,
+});
+const actionCreators = {
+  addNewFeed: addFeed,
+};
+
+export default connect(
+  mapStateToProps,
+  actionCreators,
+)(AddPostScreen);

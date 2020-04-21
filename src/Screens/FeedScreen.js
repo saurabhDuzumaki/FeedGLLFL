@@ -1,34 +1,28 @@
 import * as React from 'react';
 import {View, FlatList, StyleSheet, Text} from 'react-native';
-import {Searchbar, FAB, ActivityIndicator} from 'react-native-paper';
-import AsyncStorage from '@react-native-community/async-storage';
+import {Searchbar, FAB} from 'react-native-paper';
 import FeedItem from '../Components/FeedItem';
 import Loader from '../Components/Loader';
+import {connect} from 'react-redux';
+import {getFeed} from '../Store/actions/feedActions';
 
-const ALL_POSTS = 'ALL_POSTS';
 let originalPosts;
 
-const FeedScreen = ({navigation}) => {
+const FeedScreen = ({navigation, allFeeds, dispatch, getAllFeed}) => {
   // AsyncStorage.clear();
   const [searchQuery, setSearchQuery] = React.useState('');
-
   const [feeds, setFeeds] = React.useState([]);
   const [isLoaded, setIsLoaded] = React.useState(false);
 
   React.useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', async () => {
-      // setIsLoaded(false);
-      let allFeeds = await AsyncStorage.getItem(ALL_POSTS);
-      if (allFeeds && allFeeds.length > 0) {
-        originalPosts = JSON.parse(allFeeds).reverse();
-        allFeeds ? setFeeds(originalPosts) : [];
-      }
-      // console.log(allFeeds);
-      setIsLoaded(true);
-    });
+    dispatch(getFeed());
+  }, [dispatch]);
 
-    return unsubscribe;
-  }, [navigation]);
+  React.useEffect(() => {
+    setFeeds(allFeeds);
+    setIsLoaded(true);
+    console.log('12333');
+  }, [allFeeds]);
 
   const _onChangeSearch = text => {
     setSearchQuery(text);
@@ -106,4 +100,8 @@ const styles = StyleSheet.create({
   },
 });
 
-export default FeedScreen;
+const mapStateToProps = (state, ownProps) => ({
+  allFeeds: state.feed.allFeeds,
+});
+
+export default connect(mapStateToProps)(FeedScreen);

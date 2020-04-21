@@ -8,6 +8,7 @@ export const SIGN_UP_FAIL = 'SIGN_UP_FAIL';
 export const LOG_OUT = 'LOG_OUT';
 export const LOGIN_ERROR_PASSWORD = 'LOGIN_ERROR_PASSWORD';
 export const LOGIN_ERROR_ACCOUNT = 'LOGIN_ERROR_ACCOUNT';
+export const CURRENT_USER = 'CURRENT_USER';
 
 //Feed
 export const ADD_FEED = 'ADD_FEED';

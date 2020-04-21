@@ -1,35 +1,42 @@
 import * as React from 'react';
 import {TextInput, Button, Snackbar, Headline} from 'react-native-paper';
 import {AuthContext} from '../../App';
-import AsyncStorage from '@react-native-community/async-storage';
 import {View, StyleSheet} from 'react-native';
+import {connect} from 'react-redux';
+import {fetchLogin} from '../Store/actions/authActions';
 
-const SignInScreen = ({navigation}) => {
+const SignInScreen = ({
+  navigation,
+  loading,
+  isError,
+  loginError,
+  isSuccess,
+  user,
+  login,
+}) => {
   const [username, setUsername] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [visible, setVisible] = React.useState(false);
 
   const {signIn} = React.useContext(AuthContext);
 
-  const validate = async () => {
-    let allUsers = await AsyncStorage.getItem('ALL_USERS');
-    if (allUsers) {
-      allUsers = JSON.parse(allUsers);
-      const user = allUsers.find(res => res.user.username === username);
-      if (user) {
-        if (user.user.password === password) {
-          await AsyncStorage.setItem('user', JSON.stringify(user));
-          signIn(user);
-        } else {
-          setVisible(true);
-        }
-      } else {
-        setVisible(true);
-      }
-    } else {
-      setVisible(true);
+  const validate = () => {
+    if (username.trim().length > 0 && password.length > 0) {
+      login(username, password);
     }
   };
+
+  React.useEffect(() => {
+    setVisible(isError);
+  }, [isError]);
+
+  React.useEffect(() => {
+    console.log(isSuccess);
+
+    if (isSuccess) {
+      signIn(user);
+    }
+  }, [user, signIn, isSuccess]);
 
   return (
     <View style={styles.content}>
@@ -49,7 +56,11 @@ const SignInScreen = ({navigation}) => {
         onChangeText={setPassword}
         secureTextEntry
       />
-      <Button style={styles.items} onPress={validate} mode="contained">
+      <Button
+        style={styles.items}
+        loading={loading}
+        onPress={validate}
+        mode="contained">
         Sign In
       </Button>
       <Button
@@ -59,7 +70,7 @@ const SignInScreen = ({navigation}) => {
         Sign Up here!
       </Button>
       <Snackbar visible={visible} onDismiss={() => setVisible(false)}>
-        Invalid credentials. Please check and try again.
+        {loginError}
       </Snackbar>
     </View>
   );
@@ -76,4 +87,19 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SignInScreen;
+const mapStateToProps = (state, ownProps) => ({
+  loading: state.auth.isLoginLoading,
+  isError: state.auth.isLoginError,
+  loginError: state.auth.loginError,
+  isSuccess: state.auth.isLoginSuccess,
+  user: state.auth.user,
+});
+
+const actionCreators = {
+  login: fetchLogin,
+};
+
+export default connect(
+  mapStateToProps,
+  actionCreators,
+)(SignInScreen);
